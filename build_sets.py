@@ -259,7 +259,7 @@ def build_set_tfidf():
             testing_set.append(content_real[i])
             testing_label.append(1)
 
-    tfidf_vectorizer = TfidfVectorizer(stop_words = "english", max_df = 0.8)
+    tfidf_vectorizer = TfidfVectorizer(stop_words = "english", max_df = 0.95)
 
     training_set = tfidf_vectorizer.fit_transform(training_set)
     validation_set = tfidf_vectorizer.transform(validation_set)
@@ -315,7 +315,7 @@ def build_set_count():
             testing_set.append(content_real[i])
             testing_label.append(1)
 
-    count_vectorizer = CountVectorizer(stop_words = "english", max_df = 0.8)
+    count_vectorizer = CountVectorizer(stop_words = "english", max_df = 0.95)
 
     training_set = count_vectorizer.fit_transform(training_set)
     validation_set = count_vectorizer.transform(validation_set)

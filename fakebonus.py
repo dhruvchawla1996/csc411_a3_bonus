@@ -81,7 +81,7 @@ def MLP_clf__KBest(training_set_np, validation_set_np, testing_set_np, training_
     print("\n")
 
 def PassiveAggressive_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label):
-    clf = PassiveAggressiveClassifier(max_iter = 150)
+    clf = PassiveAggressiveClassifier(max_iter = 50)
     clf.fit(training_set_np, training_label)
 
     print("Passive Aggressive Classifier")
