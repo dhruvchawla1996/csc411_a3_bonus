@@ -10,6 +10,7 @@ from sklearn.feature_selection import f_classif
 from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.linear_model import SGDClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.svm import LinearSVC
 from sklearn.svm import SVC
 
@@ -134,11 +135,22 @@ def SVM_clf(training_set_np, validation_set_np, testing_set_np, training_label, 
     print("Testing Set Accuracy   : " + str(100*clf.score(testing_set_np, testing_label)))
     print("\n")
 
+def Adaboost_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label):
+    clf = AdaBoostClassifier()
+    clf.fit(training_set_np, training_label)
+
+    print("AdaBoost Classifier")
+    print("Training Set Accuracy  : " + str(100*clf.score(training_set_np, training_label)))
+    print("Validation Set Accuracy: " + str(100*clf.score(validation_set_np, validation_label)))
+    print("Testing Set Accuracy   : " + str(100*clf.score(testing_set_np, testing_label)))
+    print("\n")
+
 ################################################################################
 ################################################################################
 ################################################################################
 
 training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label = ready_the_data()
+Adaboost_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 DecisionTrees(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 RandomForest(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 MultinomialNB_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
@@ -152,6 +164,7 @@ MLP_clf(training_set_np, validation_set_np, testing_set_np, training_label, vali
 MLP_clf__KBest(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 
 training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label = build_set_tfidf()
+Adaboost_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 DecisionTrees(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 RandomForest(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 MultinomialNB_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
@@ -165,6 +178,7 @@ MLP_clf(training_set_np, validation_set_np, testing_set_np, training_label, vali
 MLP_clf__KBest(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 
 training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label = build_set_count()
+Adaboost_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 DecisionTrees(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 RandomForest(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 MultinomialNB_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
