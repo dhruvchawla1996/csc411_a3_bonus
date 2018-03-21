@@ -8,6 +8,10 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import f_classif
 from sklearn.linear_model import PassiveAggressiveClassifier
+from sklearn.linear_model import SGDClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import LinearSVC
+from sklearn.svm import SVC
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -90,24 +94,85 @@ def PassiveAggressive_clf(training_set_np, validation_set_np, testing_set_np, tr
     print("Testing Set Accuracy   : " + str(100*clf.score(testing_set_np, testing_label)))
     print("\n")
 
+def SGD_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label):
+    clf = SGDClassifier()
+    clf.fit(training_set_np, training_label)
+
+    print("SGD Classifier")
+    print("Training Set Accuracy  : " + str(100*clf.score(training_set_np, training_label)))
+    print("Validation Set Accuracy: " + str(100*clf.score(validation_set_np, validation_label)))
+    print("Testing Set Accuracy   : " + str(100*clf.score(testing_set_np, testing_label)))
+    print("\n")
+
+def LogisticRegression_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label):
+    clf = LogisticRegression()
+    clf.fit(training_set_np, training_label)
+
+    print("Logistic Regression Classifier")
+    print("Training Set Accuracy  : " + str(100*clf.score(training_set_np, training_label)))
+    print("Validation Set Accuracy: " + str(100*clf.score(validation_set_np, validation_label)))
+    print("Testing Set Accuracy   : " + str(100*clf.score(testing_set_np, testing_label)))
+    print("\n")
+
+def LinearSVM_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label):
+    clf = LinearSVC()
+    clf.fit(training_set_np, training_label)
+
+    print("Linear SVM Classifier")
+    print("Training Set Accuracy  : " + str(100*clf.score(training_set_np, training_label)))
+    print("Validation Set Accuracy: " + str(100*clf.score(validation_set_np, validation_label)))
+    print("Testing Set Accuracy   : " + str(100*clf.score(testing_set_np, testing_label)))
+    print("\n")
+
+def SVM_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label):
+    clf = SVC()
+    clf.fit(training_set_np, training_label)
+
+    print("SVM Classifier")
+    print("Training Set Accuracy  : " + str(100*clf.score(training_set_np, training_label)))
+    print("Validation Set Accuracy: " + str(100*clf.score(validation_set_np, validation_label)))
+    print("Testing Set Accuracy   : " + str(100*clf.score(testing_set_np, testing_label)))
+    print("\n")
+
 ################################################################################
 ################################################################################
 ################################################################################
+
+training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label = ready_the_data()
+DecisionTrees(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+RandomForest(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+MultinomialNB_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+GaussianNB_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+PassiveAggressive_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+LogisticRegression_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+LinearSVM_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+SVM_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+SGD_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+MLP_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+MLP_clf__KBest(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 
 training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label = build_set_tfidf()
 DecisionTrees(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 RandomForest(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 MultinomialNB_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 # GaussianNB_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+PassiveAggressive_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+LogisticRegression_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+LinearSVM_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+SVM_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+SGD_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 MLP_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 MLP_clf__KBest(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
-PassiveAggressive_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 
 training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label = build_set_count()
 DecisionTrees(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 RandomForest(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 MultinomialNB_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 # GaussianNB_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+PassiveAggressive_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+LogisticRegression_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+LinearSVM_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+SVM_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
+SGD_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 MLP_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
 MLP_clf__KBest(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
-PassiveAggressive_clf(training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label)
