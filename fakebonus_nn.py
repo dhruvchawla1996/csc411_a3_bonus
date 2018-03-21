@@ -6,16 +6,26 @@ import numpy as np
 from build_sets import *
 
 def fakebonus_nn():
-    training_set, validation_set, testing_set, training_label, validation_label, testing_label  = build_sets()
-    word_index_dict, total_unique_words = word_to_index_builder(training_set, validation_set, testing_set)
-    training_set_np, validation_set_np, testing_set_np, training_label_np, validation_label_np, testing_label_np = convert_sets_to_vector(training_set, validation_set, testing_set, training_label, validation_label, testing_label, word_index_dict, total_unique_words)
+    training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label = build_sets_spacy()
+
+    training_label_np = np.asarray(training_label).transpose()
+    training_label_np_complement = 1 - training_label_np
+    training_label_np = np.vstack((training_label_np, training_label_np_complement)).transpose()
+
+    validation_label_np = np.asarray(validation_label).transpose()
+    validation_label_np_complement = 1 - validation_label_np
+    validation_label_np = np.vstack((validation_label_np, validation_label_np_complement)).transpose()
+
+    testing_label_np = np.asarray(testing_label).transpose()
+    testing_label_np_complement = 1 - testing_label_np
+    testing_label_np = np.vstack((testing_label_np, testing_label_np_complement)).transpose()
 
     torch.manual_seed(42)
 
-    dim_x = total_unique_words
-    dim_h0 = 1024
-    dim_h1 = 32
-    dim_h2 = 8
+    dim_x = 384
+    dim_h0 = 512
+    dim_h1 = 256
+    dim_h2 = 128
     dim_out = 2
 
     x = Variable(torch.from_numpy(training_set_np), requires_grad=False).type(torch.FloatTensor)
