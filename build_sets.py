@@ -1,6 +1,7 @@
 # Imports
 import random
 import numpy as np
+import spacy
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -322,3 +323,25 @@ def build_set_count():
     testing_set = count_vectorizer.transform(testing_set)
 
     return training_set, validation_set, testing_set, training_label, validation_label, testing_label
+
+def build_sets_spacy():
+    training_set, validation_set, testing_set, training_label, validation_label, testing_label = build_sets()
+
+    nlp = spacy.load('en_core_web_lg')
+
+    _training_set, _validation_set, _testing_set = np.zeros((0, 300)), np.zeros((0, 300)), np.zeros((0, 300))
+
+    for headline in training_set:
+        token = nlp(headline)
+        _training_set = np.concatenate((_training_set, token.vector.reshape((1, 300))), axis = 0)
+
+    for headline in validation_set:
+        token = nlp(headline)
+        _validation_set = np.concatenate((_validation_set, token.vector.reshape((1, 300))), axis = 0)
+
+    for headline in testing_set:
+        token = nlp(headline)
+        _testing_set = np.concatenate((_testing_set, token.vector.reshape((1, 300))), axis = 0)
+
+    return _training_set, _validation_set, _testing_set, training_label, validation_label, testing_label
+
