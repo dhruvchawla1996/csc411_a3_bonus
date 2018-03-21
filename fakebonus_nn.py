@@ -14,9 +14,8 @@ def fakebonus_nn():
 
     dim_x = total_unique_words
     dim_h0 = 1024
-    dim_h1 = 512
-    dim_h2 = 256
-    dim_h3 = 128
+    dim_h1 = 32
+    dim_h2 = 8
     dim_out = 2
 
     x = Variable(torch.from_numpy(training_set_np), requires_grad=False).type(torch.FloatTensor)
@@ -29,9 +28,7 @@ def fakebonus_nn():
         torch.nn.ReLU(),
         torch.nn.Linear(dim_h1, dim_h2),
         torch.nn.ReLU(),
-        torch.nn.Linear(dim_h2, dim_h3),
-        torch.nn.ReLU(),
-        torch.nn.Linear(dim_h, dim_out),
+        torch.nn.Linear(dim_h2, dim_out),
     )
 
     loss_fn = torch.nn.CrossEntropyLoss()
