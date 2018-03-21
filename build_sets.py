@@ -325,23 +325,68 @@ def build_set_count():
     return training_set, validation_set, testing_set, training_label, validation_label, testing_label
 
 def build_sets_spacy():
-    training_set, validation_set, testing_set, training_label, validation_label, testing_label = build_sets()
+    fname_fake, fname_real = "clean_fake.txt", "clean_real.txt"
 
-    nlp = spacy.load('en_core_web_lg')
+    content_fake, content_real = [], []
 
-    _training_set, _validation_set, _testing_set = np.zeros((0, 300)), np.zeros((0, 300)), np.zeros((0, 300))
+    with open(fname_fake) as f:
+        _content_fake = f.readlines()
+
+        for line in _content_fake:
+            content_fake.append(line[:-1])
+
+    with open(fname_real) as f:
+        _content_real = f.readlines()
+
+        for line in _content_real:
+            content_real.append(line[:-1])
+
+    random.seed(42)
+
+    random.shuffle(content_fake)
+    random.shuffle(content_real)
+
+    # Split in sets
+    training_set, validation_set, testing_set = [], [], []
+    training_label, validation_label, testing_label = [], [], []
+
+    for i in range(len(content_fake)):
+        if i < 0.7*len(content_fake):
+            training_set.append(content_fake[i])
+            training_label.append(0)
+        elif i < 0.85*len(content_fake):
+            validation_set.append(content_fake[i])
+            validation_label.append(0)
+        else:
+            testing_set.append(content_fake[i])
+            testing_label.append(0)
+
+    for i in range(len(content_real)):
+        if i < 0.7*len(content_real):
+            training_set.append(content_real[i])
+            training_label.append(1)
+        elif i < 0.85*len(content_real):
+            validation_set.append(content_real[i])
+            validation_label.append(1)
+        else:
+            testing_set.append(content_real[i])
+            testing_label.append(1)
+
+    nlp = spacy.load('en')
+
+    _training_set, _validation_set, _testing_set = np.zeros((0, 384)), np.zeros((0, 384)), np.zeros((0, 384))
 
     for headline in training_set:
         token = nlp(headline)
-        _training_set = np.concatenate((_training_set, token.vector.reshape((1, 300))), axis = 0)
+        _training_set = np.concatenate((_training_set, token.vector.reshape((1, 384))), axis = 0)
 
     for headline in validation_set:
         token = nlp(headline)
-        _validation_set = np.concatenate((_validation_set, token.vector.reshape((1, 300))), axis = 0)
+        _validation_set = np.concatenate((_validation_set, token.vector.reshape((1, 384))), axis = 0)
 
     for headline in testing_set:
         token = nlp(headline)
-        _testing_set = np.concatenate((_testing_set, token.vector.reshape((1, 300))), axis = 0)
+        _testing_set = np.concatenate((_testing_set, token.vector.reshape((1, 384))), axis = 0)
 
     return _training_set, _validation_set, _testing_set, training_label, validation_label, testing_label
 
