@@ -3,29 +3,21 @@ import torch
 from torch.autograd import Variable
 import numpy as np
 
-from build_sets import *
-
 def fakebonus_nn():
-    training_set_np, validation_set_np, testing_set_np, training_label, validation_label, testing_label = build_sets_spacy()
+    training_set_np = np.load("training_set.npy")
+    validation_set_np = np.load("validation_set.npy")
+    testing_set_np = np.load("testing_set.npy")
 
-    training_label_np = np.asarray(training_label).transpose()
-    training_label_np_complement = 1 - training_label_np
-    training_label_np = np.vstack((training_label_np, training_label_np_complement)).transpose()
-
-    validation_label_np = np.asarray(validation_label).transpose()
-    validation_label_np_complement = 1 - validation_label_np
-    validation_label_np = np.vstack((validation_label_np, validation_label_np_complement)).transpose()
-
-    testing_label_np = np.asarray(testing_label).transpose()
-    testing_label_np_complement = 1 - testing_label_np
-    testing_label_np = np.vstack((testing_label_np, testing_label_np_complement)).transpose()
+    training_label_np = np.load("training_label.npy")
+    validation_label_np = np.load("validation_label.npy")
+    testing_label_np = np.load("testing_label.npy")
 
     torch.manual_seed(42)
 
-    dim_x = 384
-    dim_h0 = 512
-    dim_h1 = 256
-    dim_h2 = 128
+    dim_x = training_set_np.shape[1]
+    dim_h0 = 1024
+    dim_h1 = 512
+    dim_h2 = 256
     dim_out = 2
 
     x = Variable(torch.from_numpy(training_set_np), requires_grad=False).type(torch.FloatTensor)
@@ -43,7 +35,7 @@ def fakebonus_nn():
 
     loss_fn = torch.nn.CrossEntropyLoss()
 
-    learning_rate, max_iter = 1e-4, 150
+    learning_rate, max_iter = 1e-5, 500
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     for t in range(max_iter):
         y_pred = model(x)
@@ -69,8 +61,8 @@ def fakebonus_nn():
             valid_perf_i = (np.mean(np.argmax(y_pred, 1) == np.argmax(validation_label_np, 1))) * 100
             print("Validation Set Performance:  " + str(valid_perf_i) + "%\n")
 
-    # Training Performance
+    # Testing Performance
     x_test = Variable(torch.from_numpy(testing_set_np), requires_grad=False).type(torch.FloatTensor)
-    y_pred = model(x_train).data.numpy()
+    y_pred = model(x_test).data.numpy()
     test_perf_i = (np.mean(np.argmax(y_pred, 1) == np.argmax(testing_label_np, 1))) * 100
     print("Testing Set Performance   : " + str(test_perf_i) + "%") 

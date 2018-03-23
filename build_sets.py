@@ -2,10 +2,12 @@
 import random
 import numpy as np
 import spacy
+from sklearn.preprocessing import MinMaxScaler
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 
+nlp = spacy.load('en')
 
 def build_sets():
     """
@@ -89,19 +91,13 @@ def build_sets():
 
     return training_set, validation_set, testing_set, training_label, validation_label, testing_label 
 
-def word_to_index_builder(training_set, validation_set, testing_set):
+def word_to_index_builder(training_set):
     """
     Build a mapping of word -> unique number
 
     PARAMETERS
     ----------
     training_set: list of list of strings
-        contains headlines broken into words
-
-    validation_set: list of list of strings
-        contains headlines broken into words
-
-    testing_set: list of list of strings
         contains headlines broken into words
 
     RETURNS
@@ -115,8 +111,8 @@ def word_to_index_builder(training_set, validation_set, testing_set):
     word_dict = {}
     i = 0
 
-    for headline in training_set+validation_set+testing_set:
-        for word in headline:
+    for headline in training_set:
+        for word in str.split(headline):
             if word not in word_dict: 
                 word_dict[word] = i
                 i += 1
@@ -372,21 +368,124 @@ def build_sets_spacy():
             testing_set.append(content_real[i])
             testing_label.append(1)
 
-    nlp = spacy.load('en')
+    word_index_dict, total_unique_words = word_to_index_builder(training_set)
 
-    _training_set, _validation_set, _testing_set = np.zeros((0, 384)), np.zeros((0, 384)), np.zeros((0, 384))
+    _training_set, _validation_set, _testing_set = np.zeros((0, total_unique_words+384+13)), np.zeros((0, total_unique_words+384+13)), np.zeros((0, total_unique_words+384+13))
 
     for headline in training_set:
-        token = nlp(headline)
-        _training_set = np.concatenate((_training_set, token.vector.reshape((1, 384))), axis = 0)
+        training_set_i = np.zeros(total_unique_words)
+
+        for word in str.split(headline):
+            if word in word_index_dict: training_set_i[word_index_dict[word]] += 1.
+
+        training_set_i = training_set_i.reshape((1, total_unique_words))
+        training_set_i = np.hstack((training_set_i, extract_features(headline)))
+
+        _training_set = np.concatenate((_training_set, training_set_i), axis = 0)
 
     for headline in validation_set:
-        token = nlp(headline)
-        _validation_set = np.concatenate((_validation_set, token.vector.reshape((1, 384))), axis = 0)
+        validation_set_i = np.zeros(total_unique_words)
+
+        for word in str.split(headline):
+            if word in word_index_dict: validation_set_i[word_index_dict[word]] += 1.
+
+        validation_set_i = validation_set_i.reshape((1, total_unique_words))
+        validation_set_i = np.hstack((validation_set_i, extract_features(headline)))
+
+        _validation_set = np.concatenate((_validation_set, validation_set_i), axis = 0)
 
     for headline in testing_set:
-        token = nlp(headline)
-        _testing_set = np.concatenate((_testing_set, token.vector.reshape((1, 384))), axis = 0)
+        testing_set_i = np.zeros(total_unique_words)
+
+        for word in str.split(headline):
+            if word in word_index_dict: testing_set_i[word_index_dict[word]] += 1.
+
+        testing_set_i = testing_set_i.reshape((1, total_unique_words))
+        testing_set_i = np.hstack((testing_set_i, extract_features(headline)))
+
+        _testing_set = np.concatenate((_testing_set, testing_set_i), axis = 0)
+
+    # scaler = MinMaxScaler(feature_range = (0, 1))
+    # scaler.fit_transform(_training_set)
+    # scaler.transform(_validation_set)
+    # scaler.transform(_testing_set)
+
+    # training_label_np = np.asarray(training_label).transpose()
+    # training_label_np_complement = 1 - training_label_np
+    # training_label_np = np.vstack((training_label_np, training_label_np_complement)).transpose()
+
+    # validation_label_np = np.asarray(validation_label).transpose()
+    # validation_label_np_complement = 1 - validation_label_np
+    # validation_label_np = np.vstack((validation_label_np, validation_label_np_complement)).transpose()
+
+    # testing_label_np = np.asarray(testing_label).transpose()
+    # testing_label_np_complement = 1 - testing_label_np
+    # testing_label_np = np.vstack((testing_label_np, testing_label_np_complement)).transpose()
+
+    # np.save("training_set", _training_set)
+    # np.save("validation_set", _validation_set)
+    # np.save("testing_set", _testing_set)
+
+    # np.save("training_label", training_label_np)
+    # np.save("validation_label", validation_label_np)
+    # np.save("testing_label", testing_label_np)
 
     return _training_set, _validation_set, _testing_set, training_label, validation_label, testing_label
 
+def extract_features(headline):
+    words, tags = [], []
+    tokens = nlp(headline)
+
+    vectors = np.zeros((0, 384))
+
+    for token in tokens:
+        words.append(token.text)
+        tags.append(token.tag_)
+
+        vectors = np.concatenate((vectors, token.vector.reshape((1, 384))), axis = 0)
+
+    features = ([0] * 13)[:]
+
+    for i in range(len(words)):
+        if words[i] in ['i', 'me', 'mine', 'we', 'us', 'ours']:
+            features[0] += 1
+
+        if words[i] in ['you', 'your', 'yours']:
+            features[1] += 1
+
+        if words[i] in ['he', 'she', 'it', 'him', 'his', 'her', 'they', 'them', 'their', 'theirs', 'hers']:
+            features[2] += 1
+
+        if tags[i] == 'CC':
+            features[3] += 1
+
+        if tags[i] == 'VBD':
+            features[4] += 1
+
+        if tags[i] in {'NN', 'NNS'}:
+            features[5] += 1
+
+        if tags[i] in {'NNP', 'NNPS'}:
+            features[6] += 1
+
+        if tags[i] in {'RB', 'RBR', 'RBS'}:
+            features[7] += 1
+
+        if tags[i] in {'WDT', 'WP', 'WRB'}:
+            features[8] += 1
+
+        if tags[i] == 'JJR':
+            features[9] += 1
+
+        if tags[i] == 'JJS':
+            features[10] += 1
+
+        if tags[i] == 'MD':
+            features[11] += 1
+
+        if words[i].isalpha():
+            features[12] += 1
+
+    features = np.array(features).reshape((13,))
+    features = np.concatenate((features, vectors.mean(axis=0)))
+    return features.reshape((1, 384+13))
