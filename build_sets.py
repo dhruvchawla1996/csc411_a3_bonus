@@ -370,7 +370,7 @@ def build_sets_spacy():
 
     word_index_dict, total_unique_words = word_to_index_builder(training_set)
 
-    _training_set, _validation_set, _testing_set = np.zeros((0, total_unique_words+384+13)), np.zeros((0, total_unique_words+384+13)), np.zeros((0, total_unique_words+384+13))
+    _training_set, _validation_set, _testing_set = np.zeros((0, total_unique_words+384)), np.zeros((0, total_unique_words+384)), np.zeros((0, total_unique_words+384))
 
     for headline in training_set:
         training_set_i = np.zeros(total_unique_words)
@@ -444,48 +444,51 @@ def extract_features(headline):
 
         vectors = np.concatenate((vectors, token.vector.reshape((1, 384))), axis = 0)
 
-    features = ([0] * 13)[:]
+    # features = ([0] * 13)[:]
 
-    for i in range(len(words)):
-        if words[i] in ['i', 'me', 'mine', 'we', 'us', 'ours']:
-            features[0] += 1
+    # for i in range(len(words)):
+    #     if words[i] in ['i', 'me', 'mine', 'we', 'us', 'ours']:
+    #         features[0] += 1
 
-        if words[i] in ['you', 'your', 'yours']:
-            features[1] += 1
+    #     if words[i] in ['you', 'your', 'yours']:
+    #         features[1] += 1
 
-        if words[i] in ['he', 'she', 'it', 'him', 'his', 'her', 'they', 'them', 'their', 'theirs', 'hers']:
-            features[2] += 1
+    #     if words[i] in ['he', 'she', 'it', 'him', 'his', 'her', 'they', 'them', 'their', 'theirs', 'hers']:
+    #         features[2] += 1
 
-        if tags[i] == 'CC':
-            features[3] += 1
+    #     if tags[i] == 'CC':
+    #         features[3] += 1
 
-        if tags[i] == 'VBD':
-            features[4] += 1
+    #     if tags[i] == 'VBD':
+    #         features[4] += 1
 
-        if tags[i] in {'NN', 'NNS'}:
-            features[5] += 1
+    #     if tags[i] in {'NN', 'NNS'}:
+    #         features[5] += 1
 
-        if tags[i] in {'NNP', 'NNPS'}:
-            features[6] += 1
+    #     if tags[i] in {'NNP', 'NNPS'}:
+    #         features[6] += 1
 
-        if tags[i] in {'RB', 'RBR', 'RBS'}:
-            features[7] += 1
+    #     if tags[i] in {'RB', 'RBR', 'RBS'}:
+    #         features[7] += 1
 
-        if tags[i] in {'WDT', 'WP', 'WRB'}:
-            features[8] += 1
+    #     if tags[i] in {'WDT', 'WP', 'WRB'}:
+    #         features[8] += 1
 
-        if tags[i] == 'JJR':
-            features[9] += 1
+    #     if tags[i] == 'JJR':
+    #         features[9] += 1
 
-        if tags[i] == 'JJS':
-            features[10] += 1
+    #     if tags[i] == 'JJS':
+    #         features[10] += 1
 
-        if tags[i] == 'MD':
-            features[11] += 1
+    #     if tags[i] == 'MD':
+    #         features[11] += 1
 
-        if words[i].isalpha():
-            features[12] += 1
+    #     if words[i].isalpha():
+    #         features[12] += 1
 
-    features = np.array(features).reshape((13,))
-    features = np.concatenate((features, vectors.mean(axis=0)))
-    return features.reshape((1, 384+13))
+    # features = np.array(features).reshape((13,))
+    # features = np.concatenate((features, vectors.mean(axis=0)))
+    # return features.reshape((1, 384+13))
+
+    vectors = vectors.mean(axis = 0)
+    return vectors.reshape((1, 384))
